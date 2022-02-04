@@ -1,17 +1,16 @@
 package io.github.krammatik.plugins
 
-import io.ktor.server.routing.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.locations.*
 import io.ktor.server.plugins.*
-import io.ktor.server.application.*
 import io.ktor.server.response.*
-import io.ktor.server.request.*
+import io.ktor.server.routing.*
 
+@OptIn(KtorExperimentalLocationsAPI::class)
 fun Application.configureRouting() {
     install(Locations) {
     }
-
 
     routing {
         get("/") {
@@ -28,10 +27,10 @@ fun Application.configureRouting() {
             call.respondText("Inside $it")
         }
         install(StatusPages) {
-            exception<AuthenticationException> { cause ->
+            exception<AuthenticationException> { call, _ ->
                 call.respond(HttpStatusCode.Unauthorized)
             }
-            exception<AuthorizationException> { cause ->
+            exception<AuthorizationException> { call, _ ->
                 call.respond(HttpStatusCode.Forbidden)
             }
 

@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.krammatik"
-version = "0.0.1"
+version = System.getenv("GITHUB_SHA")?.substring(0, 7) ?: "0.0.1"
 application {
     mainClass.set("io.github.krammatik.ApplicationKt")
 }
@@ -31,4 +31,27 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "11"
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
+}
+
+tasks {
+    val fatJar = task<Jar>("fatJar") {
+        archiveFileName.set("${project.name}.jar")
+        manifest {
+            attributes["Main-Class"] = application.mainClass
+            attributes["Implementation-Version"] = archiveVersion
+        }
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+        with(jar.get() as CopySpec)
+    }
+    "build" {
+        dependsOn(fatJar)
+    }
 }
