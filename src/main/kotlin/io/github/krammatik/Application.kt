@@ -4,8 +4,8 @@ import io.github.krammatik.encrypt.EncryptionService
 import io.github.krammatik.plugins.configureMonitoring
 import io.github.krammatik.plugins.configureRouting
 import io.github.krammatik.plugins.configureSerialization
-import io.github.krammatik.user.IUserDatabase
-import io.github.krammatik.user.UserDynamoDatabase
+import io.github.krammatik.user.services.IUserDatabase
+import io.github.krammatik.user.services.UserDynamoDatabase
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.kodein.di.bind

@@ -1,4 +1,7 @@
-package io.github.krammatik.user
+package io.github.krammatik.user.services
+
+import io.github.krammatik.user.Account
+import io.github.krammatik.user.User
 
 interface IUserDatabase {
 

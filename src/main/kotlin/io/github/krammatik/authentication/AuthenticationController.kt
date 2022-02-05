@@ -7,8 +7,8 @@ import io.github.krammatik.encrypt.EncryptionService
 import io.github.krammatik.plugins.AuthenticationException
 import io.github.krammatik.plugins.InvalidRequestException
 import io.github.krammatik.user.Account
-import io.github.krammatik.user.IUserDatabase
 import io.github.krammatik.user.User
+import io.github.krammatik.user.services.IUserDatabase
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*

@@ -1,8 +1,12 @@
-package io.github.krammatik.user
+package io.github.krammatik.user.services
 
 import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
+import aws.sdk.kotlin.services.dynamodb.model.ConditionalCheckFailedException
 import io.github.krammatik.dynamodb.DynamoDB
+import io.github.krammatik.plugins.InvalidRequestException
+import io.github.krammatik.user.Account
+import io.github.krammatik.user.User
 
 class UserDynamoDatabase : IUserDatabase {
 
@@ -12,13 +16,15 @@ class UserDynamoDatabase : IUserDatabase {
 
     override suspend fun createUser(user: User, password: String): User {
         val attributes = DynamoDB.encode(user.toAccount(password))
-        client.putItem {
-            tableName = "users"
-            item = attributes
-            conditionExpression = "username <> :username" // Add user only if username does not exist
-            expressionAttributeValues = mutableMapOf(
-                ":username" to AttributeValue.S(user.username)
-            )
+        try {
+            client.putItem {
+                tableName = "users"
+                item = attributes
+                conditionExpression = "username <> :name" // Add user only if username does not exist
+                expressionAttributeValues = mapOf(":name" to AttributeValue.S(user.username))
+            }
+        } catch (e: ConditionalCheckFailedException) {
+            throw InvalidRequestException()
         }
         return user
     }
