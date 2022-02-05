@@ -33,4 +33,9 @@ resource "aws_elastic_beanstalk_environment" "environment" {
     name      = "IamInstanceProfile"
     value     = "krammatikBackend"
   }
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "ENCRYPT_SECRET"
+    value     = var.encrypt_secret
+  }
 }
