@@ -1,8 +1,12 @@
 package io.github.krammatik.plugins
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
 import io.github.krammatik.dynamodb.MappingException
 import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.locations.*
@@ -16,11 +20,27 @@ fun Application.configureRouting() {
     install(CORS) {
         anyHost()
     }
-    install(Locations) {
+    install(Locations) {}
+    authentication {
+        jwt {
+            verifier(
+                JWT.require(Algorithm.HMAC256(System.getenv("ENCRYPT_SECRET")))
+                    .withIssuer("https://krammatik.deathsgun.xyz/").build()
+            )
+            validate {
+                if (it.payload.getClaim("id").asString() != "") {
+                    JWTPrincipal(it.payload)
+                } else {
+                    null
+                }
+            }
+        }
     }
-
     routing {
         install(StatusPages) {
+            exception<InvalidRequestException> {
+                call.respond(HttpStatusCode.BadRequest)
+            }
             exception<AuthenticationException> {
                 call.respond(HttpStatusCode.Unauthorized)
             }
@@ -35,5 +55,6 @@ fun Application.configureRouting() {
     }
 }
 
+class InvalidRequestException : RuntimeException()
 class AuthenticationException : RuntimeException()
 class AuthorizationException : RuntimeException()

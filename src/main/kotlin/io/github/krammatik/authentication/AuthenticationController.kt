@@ -1,8 +1,11 @@
 package io.github.krammatik.authentication
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.dto.AuthenticationCredentials
 import io.github.krammatik.encrypt.EncryptionService
 import io.github.krammatik.plugins.AuthenticationException
+import io.github.krammatik.plugins.InvalidRequestException
 import io.github.krammatik.user.Account
 import io.github.krammatik.user.IUserDatabase
 import io.github.krammatik.user.User
@@ -16,8 +19,8 @@ import org.kodein.di.ktor.controller.AbstractDIController
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class AuthenticationController(application: Application) : AbstractDIController(application) {
 
@@ -28,16 +31,22 @@ class AuthenticationController(application: Application) : AbstractDIController(
         post("/login") {
             val credentials = call.receive<AuthenticationCredentials>()
             if (credentials.username.isEmpty() || credentials.password.isEmpty()) {
-                throw AuthenticationException()
+                throw InvalidRequestException()
             }
             val user = userDatabase.getAccountByName(credentials.username) ?: throw AuthenticationException()
             if (!user.passwordValid(credentials.password)) {
                 throw AuthenticationException()
             }
-            val time = LocalDateTime.now().plusHours(8).toEpochSecond(ZoneOffset.UTC)
-            val cookieValue = encryptionService.encrypt("${user.id}||$time")
-            call.response.cookies.append(Cookie("AuthSessionId", cookieValue))
-            call.respond(HttpStatusCode.NoContent)
+            val token = JWT.create()
+                .withClaim("id", user.id)
+                .withIssuer("https://krammatik.deathsgun.xyz/")
+                .withExpiresAt(Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8)))
+                .sign(Algorithm.HMAC256(System.getenv("ENCRYPT_SECRET")))
+            call.respond(
+                hashMapOf(
+                    "token" to token
+                )
+            )
         }
         put("/register") {
             val credentials = call.receive<AuthenticationCredentials>()
@@ -49,7 +58,10 @@ class AuthenticationController(application: Application) : AbstractDIController(
             call.respond(HttpStatusCode.Created, user)
         }
         get("/validate") {
-            val token = call.request.header("Authorization") ?: throw AuthenticationException()
+            var token = call.request.header("Authorization")
+            if (token == null) {
+                token = call.request.cookies["AuthSessionId"] ?: throw AuthenticationException()
+            }
             val decrypted = encryptionService.decrypt(token).split("||")
             if (decrypted.size != 2) {
                 throw AuthenticationException()
@@ -61,10 +73,6 @@ class AuthenticationController(application: Application) : AbstractDIController(
             if (userDatabase.getUserById(decrypted[0]) != null) {
                 throw AuthenticationException()
             }
-            call.respond(HttpStatusCode.NoContent)
-        }
-        get("/logout") {
-            call.response.cookies.appendExpired("AuthSessionId")
             call.respond(HttpStatusCode.NoContent)
         }
     }

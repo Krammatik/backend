@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: Krammatik backend
+  description: Krammatik backend
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+  - url: 'https://krammatik.deathsgun.xyz'
+paths:
+  /auth/login:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        200:
+          description: Successful authentication the token for request is in the response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        400:
+          description: No username or password provided
+        401:
+          description: User not found or password invalid
+  /auth/validate:
+    get:
+      security:
+        - bearerAuth: [ ]
+      responses:
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        204:
+          description: AuthSessionId is valid and can be used for further requests
+  /auth/register:
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        201:
+          description: User has been successfully created and can be used to login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "max.musterman"
+        password:
+          type: string
+          example: "MusterPassword123"
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        groups:
+          type: array
+          items:
+            type: string
