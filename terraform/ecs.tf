@@ -4,18 +4,6 @@ resource "aws_ecs_cluster" "main" {
   name = "krammatik-cluster"
 }
 
-data "template_file" "krammatik_app" {
-  template = file("./app_template.json.tpl")
-
-  vars = {
-    app_image      = var.app_image
-    app_port       = var.app_port
-    fargate_cpu    = var.fargate_cpu
-    fargate_memory = var.fargate_memory
-    aws_region     = "eu-central-1"
-  }
-}
-
 resource "aws_ecs_task_definition" "app" {
   family                   = "krammatik-app-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
