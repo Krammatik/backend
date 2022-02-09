@@ -3,6 +3,7 @@ package io.github.krammatik.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
+import io.github.krammatik.dto.ErrorResponse
 import io.github.krammatik.dynamodb.MappingException
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -38,23 +39,23 @@ fun Application.configureRouting() {
     }
     routing {
         install(StatusPages) {
-            exception<InvalidRequestException> {
-                call.respond(HttpStatusCode.BadRequest)
+            exception<InvalidRequestException> { cause ->
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message ?: ""))
             }
-            exception<AuthenticationException> {
-                call.respond(HttpStatusCode.Unauthorized)
+            exception<AuthenticationException> { cause ->
+                call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message ?: ""))
             }
-            exception<AuthorizationException> {
-                call.respond(HttpStatusCode.Forbidden)
+            exception<AuthorizationException> { cause ->
+                call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: ""))
             }
-            exception<MappingException> {
-                call.respond(HttpStatusCode.InternalServerError)
+            exception<MappingException> { cause ->
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: ""))
             }
         }
         controller("/auth") { AuthenticationController(instance()) }
     }
 }
 
-class InvalidRequestException : RuntimeException()
-class AuthenticationException : RuntimeException()
-class AuthorizationException : RuntimeException()
+class InvalidRequestException(override val message: String? = null) : RuntimeException()
+class AuthenticationException(override val message: String? = null) : RuntimeException()
+class AuthorizationException(override val message: String? = null) : RuntimeException()

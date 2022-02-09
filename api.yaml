@@ -39,7 +39,7 @@ paths:
         204:
           description: AuthSessionId is valid and can be used for further requests
   /auth/register:
-    put:
+    post:
       requestBody:
         content:
           application/json:

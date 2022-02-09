@@ -1,24 +1,36 @@
-package io.github.krammatik.user
+package io.github.krammatik.user.services
 
 import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
+import aws.sdk.kotlin.services.dynamodb.model.ConditionalCheckFailedException
 import io.github.krammatik.dynamodb.DynamoDB
+import io.github.krammatik.plugins.InvalidRequestException
+import io.github.krammatik.user.Account
+import io.github.krammatik.user.User
+import org.slf4j.LoggerFactory
 
 class UserDynamoDatabase : IUserDatabase {
 
     private val client = DynamoDbClient {
         region = "eu-central-1"
     }
+    private val logger = LoggerFactory.getLogger(UserDynamoDatabase::class.java)
 
     override suspend fun createUser(user: User, password: String): User {
+        if (getAccountByName(user.username) != null) {
+            throw InvalidRequestException("A user with this name already exits")
+        }
         val attributes = DynamoDB.encode(user.toAccount(password))
-        client.putItem {
-            tableName = "users"
-            item = attributes
-            conditionExpression = "username <> :username" // Add user only if username does not exist
-            expressionAttributeValues = mutableMapOf(
-                ":username" to AttributeValue.S(user.username)
-            )
+        try {
+            client.putItem {
+                tableName = "users"
+                item = attributes
+                conditionExpression = "username <> :name" // Add user only if username does not exist
+                expressionAttributeValues = mapOf(":name" to AttributeValue.S(user.username))
+            }
+        } catch (e: ConditionalCheckFailedException) {
+            logger.error("Error while creating user", e)
+            throw InvalidRequestException("Failed to create user")
         }
         return user
     }
