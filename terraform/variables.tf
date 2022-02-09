@@ -5,6 +5,12 @@ variable "aws_region" {
   default     = "eu-central-1"
 }
 
+variable "encrypt_secret" {}
+
+variable "ssl_cert" {}
+
+variable "ssl_key" {}
+
 variable "ecs_task_execution_role_name" {
   description = "ECS task execution role name"
   default     = "myEcsTaskExecutionRole"

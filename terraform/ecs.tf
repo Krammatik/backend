@@ -23,7 +23,45 @@ resource "aws_ecs_task_definition" "app" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
-  container_definitions    = data.template_file.krammatik_app.rendered
+  container_definitions    = jsonencode(
+    [
+      {
+        name             = "krammatik-app",
+        image            = var.app_image,
+        cpu              = var.fargate_cpu,
+        memory           = var.fargate_memory,
+        networkMode      = "awsvpc",
+        logConfiguration = {
+          logDriver = "awslogs",
+          options   = {
+            awslogs-group         = "/ecs/krammatik-app",
+            awslogs-region        = "eu-central-1",
+            awslogs-stream-prefix = "ecs"
+          }
+        },
+        portMappings = [
+          {
+            containerPort = var.app_port,
+            hostPort      = var.app_port
+          }
+        ],
+        environment = [
+          {
+            name  = "ENCRYPT_SECRET",
+            value = var.encrypt_secret
+          },
+          {
+            name  = "SSL_CERT",
+            value = var.ssl_cert
+          },
+          {
+            name  = "SSL_KEY",
+            value = var.ssl_key
+          }
+        ]
+      }
+    ]
+  )
 }
 
 resource "aws_ecs_service" "main" {
