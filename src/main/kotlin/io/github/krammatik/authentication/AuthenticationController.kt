@@ -48,7 +48,7 @@ class AuthenticationController(application: Application) : AbstractDIController(
                 )
             )
         }
-        put("/register") {
+        post("/register") {
             val credentials = call.receive<AuthenticationCredentials>()
             val password = Account.hashPassword(credentials.password)
             val user = userDatabase.createUser(

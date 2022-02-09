@@ -7,14 +7,19 @@ import io.github.krammatik.dynamodb.DynamoDB
 import io.github.krammatik.plugins.InvalidRequestException
 import io.github.krammatik.user.Account
 import io.github.krammatik.user.User
+import org.slf4j.LoggerFactory
 
 class UserDynamoDatabase : IUserDatabase {
 
     private val client = DynamoDbClient {
         region = "eu-central-1"
     }
+    private val logger = LoggerFactory.getLogger(UserDynamoDatabase::class.java)
 
     override suspend fun createUser(user: User, password: String): User {
+        if (getAccountByName(user.username) != null) {
+            throw InvalidRequestException("A user with this name already exits")
+        }
         val attributes = DynamoDB.encode(user.toAccount(password))
         try {
             client.putItem {
@@ -24,7 +29,8 @@ class UserDynamoDatabase : IUserDatabase {
                 expressionAttributeValues = mapOf(":name" to AttributeValue.S(user.username))
             }
         } catch (e: ConditionalCheckFailedException) {
-            throw InvalidRequestException()
+            logger.error("Error while creating user", e)
+            throw InvalidRequestException("Failed to create user")
         }
         return user
     }
