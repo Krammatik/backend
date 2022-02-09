@@ -38,7 +38,7 @@ class UserDynamoDatabase : IUserDatabase {
     override suspend fun getUserById(id: String): User? {
         val response = client.getItem {
             tableName = "users"
-            key = mutableMapOf("id" to AttributeValue.S("id"))
+            key = mutableMapOf("id" to AttributeValue.S(id))
         }
         if (response.item == null) {
             return null

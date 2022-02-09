@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
 import io.github.krammatik.dto.ErrorResponse
 import io.github.krammatik.dynamodb.MappingException
+import io.github.krammatik.user.UserController
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -42,6 +43,9 @@ fun Application.configureRouting() {
             exception<InvalidRequestException> { cause ->
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message ?: ""))
             }
+            exception<ResourceNotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
+            }
             exception<AuthenticationException> { cause ->
                 call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message ?: ""))
             }
@@ -53,9 +57,11 @@ fun Application.configureRouting() {
             }
         }
         controller("/auth") { AuthenticationController(instance()) }
+        controller("/user") { UserController(instance()) }
     }
 }
 
 class InvalidRequestException(override val message: String? = null) : RuntimeException()
+class ResourceNotFoundException(override val message: String? = null) : RuntimeException()
 class AuthenticationException(override val message: String? = null) : RuntimeException()
 class AuthorizationException(override val message: String? = null) : RuntimeException()
