@@ -91,5 +91,5 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: |
-          terraform apply -auto-approve -var="app_version=${GITHUB_SHA::7}" -var="encrypt_secret=${ENCRYPT_SECRET}"
+          terraform apply -auto-approve -var="encrypt_secret=${ENCRYPT_SECRET}" -var="ssl_cert=${SSL_CERT}" -var="ssl_key=${SSL_KEY}"
         working-directory: ./terraform
