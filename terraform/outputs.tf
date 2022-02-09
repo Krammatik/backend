@@ -1,3 +1,6 @@
-output "url" {
-  value = aws_elastic_beanstalk_environment.environment.endpoint_url
+# outputs.tf
+
+output "alb_hostname" {
+  value = aws_alb.main.dns_name
 }
+

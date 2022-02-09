@@ -37,6 +37,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
 
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
