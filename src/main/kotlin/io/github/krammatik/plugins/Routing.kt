@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
 import io.github.krammatik.dto.ErrorResponse
+import io.github.krammatik.user.UserController
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -35,6 +36,21 @@ fun Application.configureRouting() {
                 }
             }
         }
+        jwt("admin") {
+            verifier(
+                JWT.require(Algorithm.HMAC256(System.getenv("ENCRYPT_SECRET")))
+                    .withIssuer("https://krammatik.deathsgun.xyz/").build()
+            )
+            validate {
+                if (it.payload.getClaim("id").asString() != "" && it.payload.getClaim("groups")
+                        .asList(String::class.java).contains("admin")
+                ) {
+                    JWTPrincipal(it.payload)
+                } else {
+                    null
+                }
+            }
+        }
     }
     routing {
         install(StatusPages) {
@@ -54,7 +70,9 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
             }
         }
+
         controller("/auth") { AuthenticationController(instance()) }
+        controller("/user") { UserController(instance()) }
     }
 }
 

@@ -10,5 +10,4 @@ COPY run.sh /app
 COPY --from=builder /build/build/libs/backend.jar /app
 
 EXPOSE 8080
-EXPOSE 8443
 ENTRYPOINT ["bash", "/app/run.sh"]
