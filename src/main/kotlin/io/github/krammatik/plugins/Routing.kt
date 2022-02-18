@@ -50,6 +50,9 @@ fun Application.configureRouting() {
             exception<NotFoundException> { cause ->
                 call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
             }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
+            }
         }
         controller("/auth") { AuthenticationController(instance()) }
     }
