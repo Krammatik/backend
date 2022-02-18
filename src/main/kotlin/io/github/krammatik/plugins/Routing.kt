@@ -47,6 +47,12 @@ fun Application.configureRouting() {
             exception<AuthorizationException> { cause ->
                 call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: ""))
             }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
+            }
+            exception<NotFoundException> { cause ->
+                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
+            }
         }
         controller("/auth") { AuthenticationController(instance()) }
     }
@@ -55,3 +61,4 @@ fun Application.configureRouting() {
 class InvalidRequestException(override val message: String? = null) : RuntimeException()
 class AuthenticationException(override val message: String? = null) : RuntimeException()
 class AuthorizationException(override val message: String? = null) : RuntimeException()
+class NotFoundException(override val message: String? = null) : RuntimeException()
