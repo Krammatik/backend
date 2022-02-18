@@ -20,8 +20,6 @@ repositories {
 }
 
 dependencies {
-    // AWS SDK
-    implementation("aws.sdk.kotlin:dynamodb:0.11.0-beta")
     // Kodein
     implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.10.0")
 
@@ -37,6 +35,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
 
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
