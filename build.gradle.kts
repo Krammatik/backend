@@ -37,6 +37,9 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
 
+    // KMongo
+    implementation("org.litote.kmongo:kmongo:4.5.0")
+
     // Testing
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
