@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
 import io.github.krammatik.dto.ErrorResponse
-import io.github.krammatik.dynamodb.MappingException
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -47,9 +46,6 @@ fun Application.configureRouting() {
             }
             exception<AuthorizationException> { cause ->
                 call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: ""))
-            }
-            exception<MappingException> { cause ->
-                call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: ""))
             }
         }
         controller("/auth") { AuthenticationController(instance()) }

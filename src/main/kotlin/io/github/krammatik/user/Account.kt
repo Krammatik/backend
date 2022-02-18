@@ -1,17 +1,13 @@
 package io.github.krammatik.user
 
-import io.github.krammatik.dynamodb.ListType
-import io.github.krammatik.dynamodb.Mappable
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
 
-@Mappable
 data class Account(
     var id: String = UUID.randomUUID().toString(),
     var username: String,
     var password: String,
-    @ListType(String::class)
     var groups: List<String> = emptyList(),
 ) {
 
