@@ -20,7 +20,7 @@ fun main() {
         exitProcess(1)
     }
     if (System.getenv("MONGO_CONNECTION_STRING").isEmpty()) {
-        println("ENCRYPT_SECRET not set!")
+        println("MONGO_CONNECTION_STRING not set!")
         exitProcess(1)
     }
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
