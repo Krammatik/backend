@@ -29,6 +29,8 @@ paths:
           description: No username or password provided
         401:
           description: User not found or password invalid
+      tags:
+        - authentication
   /auth/validate:
     get:
       security:
@@ -38,6 +40,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         204:
           description: AuthSessionId is valid and can be used for further requests
+      tags:
+        - authentication
   /auth/register:
     post:
       requestBody:
@@ -52,6 +56,76 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+      tags:
+        - authentication
+  /users:
+    get:
+      tags:
+        - user
+      security:
+        - bearerAuth: [ "user" ]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: count
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          description: A list of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /users/user:
+    get:
+      security:
+        - bearerAuth: [ "user" ]
+      tags:
+        - user
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: Returns the current logged in user
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - user
+      security:
+        - bearerAuth: [ "user" ]
+      responses:
+        200:
+          description: The user by id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          description: Gets returned when the user does not exits
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   securitySchemes:
@@ -62,6 +136,10 @@ components:
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     Credentials:
       type: object
@@ -84,3 +162,8 @@ components:
           type: array
           items:
             type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string

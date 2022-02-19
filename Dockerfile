@@ -6,8 +6,7 @@ RUN gradle build
 FROM openjdk:11-slim
 ENV ENCRYPT_SECRET=""
 WORKDIR /app
-COPY run.sh /app
 COPY --from=builder /build/build/libs/backend.jar /app
 
 EXPOSE 8080
-ENTRYPOINT ["bash", "/app/run.sh"]
+ENTRYPOINT ["java", "-jar", "/app/backend.jar"]

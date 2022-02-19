@@ -11,9 +11,18 @@ import io.ktor.server.netty.*
 import org.kodein.di.bindSingleton
 import org.kodein.di.ktor.di
 import org.litote.kmongo.KMongo
+import kotlin.system.exitProcess
 
 @KtorExperimentalLocationsAPI
 fun main() {
+    if (System.getenv("ENCRYPT_SECRET").isEmpty()) {
+        println("ENCRYPT_SECRET not set!")
+        exitProcess(1)
+    }
+    if (System.getenv("MONGO_CONNECTION_STRING").isEmpty()) {
+        println("ENCRYPT_SECRET not set!")
+        exitProcess(1)
+    }
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
         // Dependency injection
         di {

@@ -1,12 +1,29 @@
+version: 3
 services:
   mongo:
     image: mongo:latest
     container_name: mongodb
+    network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
     volumes:
       - ./db:/data/db
     ports:
-      - 27017:27017
-    restart: on-failure
+      - "27017:27017"
+    restart: unless-stopped
+  krammatik:
+    image: ghcr.io/krammatik/backend:master
+    container_name: krammatik-backend
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - ENCRYPT_SECRET=${ENCRYPT_SECRET}
+    network_mode: host
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    profiles:
+      - deploy
