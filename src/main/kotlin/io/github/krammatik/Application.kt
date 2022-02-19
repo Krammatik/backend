@@ -15,11 +15,11 @@ import kotlin.system.exitProcess
 
 @KtorExperimentalLocationsAPI
 fun main() {
-    if (System.getenv("ENCRYPT_SECRET").isEmpty()) {
+    if (System.getenv("ENCRYPT_SECRET") == null) {
         println("ENCRYPT_SECRET not set!")
         exitProcess(1)
     }
-    if (System.getenv("MONGO_CONNECTION_STRING").isEmpty()) {
+    if (System.getenv("MONGO_CONNECTION_STRING") == null) {
         println("MONGO_CONNECTION_STRING not set!")
         exitProcess(1)
     }

@@ -10,15 +10,13 @@ import io.github.krammatik.user.Account
 import io.github.krammatik.user.User
 import io.github.krammatik.user.services.IUserDatabase
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.controller.AbstractDIController
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -60,28 +58,15 @@ class AuthenticationController(application: Application) : AbstractDIController(
     }
 
     private fun Route.validate() = get("/validate") {
-        var token = call.request.header("Authorization")
-        if (token == null) {
-            token = call.request.cookies["AuthSessionId"] ?: throw AuthenticationException()
-        }
-        val decrypted = encryptionService.decrypt(token).split("||")
-        if (decrypted.size != 2) {
-            throw AuthenticationException()
-        }
-        val time = LocalDateTime.ofInstant(Instant.ofEpochSecond(decrypted[1].toLong()), ZoneId.of("Z"))
-        if (time.isAfter(LocalDateTime.now())) {
-            throw AuthenticationException()
-        }
-        if (userDatabase.getUserById(decrypted[0]) != null) {
-            throw AuthenticationException()
-        }
         call.respond(HttpStatusCode.NoContent)
     }
 
     override fun Route.getRoutes() {
         login()
         register()
-        validate()
+        authenticate {
+            validate()
+        }
     }
 
 }
