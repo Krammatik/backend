@@ -56,6 +56,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        403:
+          description: There is already a user with the given username in existance
+          content:
+            applcation/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       tags:
         - authentication
   /users:
