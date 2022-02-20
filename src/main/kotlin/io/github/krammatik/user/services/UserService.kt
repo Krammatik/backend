@@ -31,7 +31,7 @@ class UserService(di: DI) : IUserDatabase {
     }
 
     override suspend fun getUserByName(name: String): User? {
-        return this.userCollection.findOne(Account::username eq name)?.toUser()
+        return getAccountByName(name)?.toUser()
     }
 
     override suspend fun getUserById(id: String): User? {
