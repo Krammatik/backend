@@ -74,6 +74,9 @@ fun Application.configureRouting() {
             exception<NotFoundException> { cause ->
                 call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
             }
+            exception<ResourceAlreadyExistsException> { cause ->
+                call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: ""))
+            }
             exception<NotFoundException> { cause ->
                 call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
             }
@@ -88,3 +91,4 @@ class InvalidRequestException(override val message: String? = null) : RuntimeExc
 class AuthenticationException(override val message: String? = null) : RuntimeException()
 class AuthorizationException(override val message: String? = null) : RuntimeException()
 class NotFoundException(override val message: String? = null) : RuntimeException()
+class ResourceAlreadyExistsException(override val message: String? = null) : RuntimeException()

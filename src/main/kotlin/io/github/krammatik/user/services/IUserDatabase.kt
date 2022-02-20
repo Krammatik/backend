@@ -9,6 +9,8 @@ interface IUserDatabase {
 
     suspend fun getUsers(page: Int, count: Int): List<User>
 
+    suspend fun getUserByName(name: String) : User?
+
     suspend fun getUserById(id: String): User?
 
     suspend fun getAccountByName(username: String): Account?
