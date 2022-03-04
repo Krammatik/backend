@@ -18,17 +18,6 @@ import org.kodein.di.ktor.controller.controller
 
 @OptIn(KtorExperimentalLocationsAPI::class)
 fun Application.configureRouting() {
-    install(CORS) {
-        host("krammatik.deathsgun.xyz")
-        host("localhost")
-        host("127.0.0.1")
-        allowCredentials = true
-        allowSameOrigin = true
-        method(HttpMethod.Options)
-        method(HttpMethod.Put)
-        method(HttpMethod.Patch)
-        method(HttpMethod.Delete)
-    }
     install(Locations) {}
     authentication {
         jwt {

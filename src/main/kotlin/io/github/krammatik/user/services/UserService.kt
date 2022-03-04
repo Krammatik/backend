@@ -18,8 +18,8 @@ class UserService(di: DI) : IUserDatabase {
     private val userCollection get() = this.database.getCollection<Account>("users")
 
     override suspend fun createUser(user: User, password: String): User {
-        if(getUserByName(user.username) != null) {
-            throw ResourceAlreadyExistsException("User with username ${user.username} already exists!")
+        if (getUserByName(user.username) != null) {
+            throw ResourceAlreadyExistsException("User with username '${user.username}' already exists!")
         }
         this.userCollection.insertOne(user.toAccount(password))
         return user

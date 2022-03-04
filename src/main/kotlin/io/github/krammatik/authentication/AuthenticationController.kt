@@ -3,7 +3,6 @@ package io.github.krammatik.authentication
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.dto.AuthenticationCredentials
-import io.github.krammatik.encrypt.EncryptionService
 import io.github.krammatik.plugins.AuthenticationException
 import io.github.krammatik.plugins.InvalidRequestException
 import io.github.krammatik.user.Account
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit
 class AuthenticationController(application: Application) : AbstractDIController(application) {
 
     private val userDatabase: IUserDatabase by di.instance()
-    private val encryptionService: EncryptionService by di.instance()
 
     private fun Route.login() = post("/login") {
         val credentials = call.receive<AuthenticationCredentials>()
