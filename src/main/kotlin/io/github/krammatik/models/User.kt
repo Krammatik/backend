@@ -1,15 +1,20 @@
-package io.github.krammatik.user
+package io.github.krammatik.models
 
+import io.github.krammatik.dto.IDataTransferable
+import io.github.krammatik.user.dto.UserDto
+import org.bson.codecs.pojo.annotations.BsonId
+import org.kodein.di.DI
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
 
-data class Account(
+data class User(
+    @BsonId
     var id: String = UUID.randomUUID().toString(),
     var username: String,
     var password: String,
     var groups: List<String> = emptyList(),
-) {
+) : IDataTransferable<UserDto> {
 
     companion object {
         fun hashPassword(password: String): String {
@@ -23,12 +28,12 @@ data class Account(
         }
     }
 
-    fun toUser(): User {
-        return User(id, username, groups)
-    }
-
     fun passwordValid(password: String): Boolean {
         return hashPassword(password) == this.password
+    }
+
+    override fun toTransferable(di: DI): UserDto {
+        return UserDto(id, username, groups)
     }
 
 }

@@ -2,11 +2,11 @@ package io.github.krammatik.authentication
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import io.github.krammatik.authentication.dto.AuthenticationCredentials
+import io.github.krammatik.authentication.dto.AuthenticationCredentialsDto
+import io.github.krammatik.models.User
 import io.github.krammatik.plugins.AuthenticationException
 import io.github.krammatik.plugins.InvalidRequestException
-import io.github.krammatik.user.Account
-import io.github.krammatik.user.User
+import io.github.krammatik.user.dto.UserDto
 import io.github.krammatik.user.services.IUserDatabase
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -24,7 +24,7 @@ class AuthenticationController(application: Application) : AbstractDIController(
     private val userDatabase: IUserDatabase by di.instance()
 
     private fun Route.login() = post("/login") {
-        val credentials = call.receive<AuthenticationCredentials>()
+        val credentials = call.receive<AuthenticationCredentialsDto>()
         if (credentials.username.isEmpty() || credentials.password.isEmpty()) {
             throw InvalidRequestException()
         }
@@ -46,10 +46,10 @@ class AuthenticationController(application: Application) : AbstractDIController(
     }
 
     private fun Route.register() = post("/register") {
-        val credentials = call.receive<AuthenticationCredentials>()
-        val password = Account.hashPassword(credentials.password)
+        val credentials = call.receive<AuthenticationCredentialsDto>()
+        val password = User.hashPassword(credentials.password)
         val user = userDatabase.createUser(
-            User(UUID.randomUUID().toString(), credentials.username, listOf("user")),
+            UserDto(UUID.randomUUID().toString(), credentials.username, listOf("user")),
             password
         )
         call.respond(HttpStatusCode.Created, user)

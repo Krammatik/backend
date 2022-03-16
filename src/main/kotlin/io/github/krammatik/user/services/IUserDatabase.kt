@@ -1,11 +1,11 @@
 package io.github.krammatik.user.services
 
-import io.github.krammatik.user.Account
-import io.github.krammatik.user.User
+import io.github.krammatik.models.User
+import io.github.krammatik.user.dto.UserDto
 
 interface IUserDatabase {
 
-    suspend fun createUser(user: User, password: String): User
+    suspend fun createUser(user: UserDto, password: String): User
 
     suspend fun getUsers(page: Int, count: Int): List<User>
 
@@ -13,5 +13,5 @@ interface IUserDatabase {
 
     suspend fun getUserById(id: String): User?
 
-    suspend fun getAccountByName(username: String): Account?
+    suspend fun getAccountByName(username: String): User?
 }

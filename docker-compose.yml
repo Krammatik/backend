@@ -12,7 +12,7 @@ services:
       - "27017:27017"
     restart: unless-stopped
   krammatik:
-    image: ghcr.io/krammatik/backend:master
+    build: .
     container_name: krammatik-backend
     environment:
       - PUID=1000

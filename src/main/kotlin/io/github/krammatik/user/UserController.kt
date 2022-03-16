@@ -17,21 +17,22 @@ class UserController(application: Application) : AbstractDIController(applicatio
     private val userDatabase: IUserDatabase by di.instance()
 
     private fun Route.getUsers() = get {
-        val users = userDatabase.getUsers(call.parameters["page"]?.toInt() ?: 0, call.parameters["count"]?.toInt() ?: 100)
-        call.respond(HttpStatusCode.OK, users)
+        val users =
+            userDatabase.getUsers(call.parameters["page"]?.toInt() ?: 0, call.parameters["count"]?.toInt() ?: 100)
+        call.respond(HttpStatusCode.OK, users.map { it.toTransferable(di) })
     }
 
     private fun Route.getCurrentUser() = get("/user") {
         val principal = call.principal<JWTPrincipal>()!!
         val userId = principal.payload.getClaim("id").asString()
         val user = userDatabase.getUserById(userId) ?: throw NotFoundException("User id '${userId}' not found")
-        call.respond(HttpStatusCode.OK, user)
+        call.respond(HttpStatusCode.OK, user.toTransferable(di))
     }
 
     private fun Route.getUserById() = get("/{id}") {
         val userId = call.parameters["id"] ?: throw InvalidRequestException("No user id provided")
         val user = userDatabase.getUserById(userId) ?: throw NotFoundException("User id '${userId}' not found")
-        call.respond(HttpStatusCode.OK, user)
+        call.respond(HttpStatusCode.OK, user.toTransferable(di))
     }
 
     override fun Route.getRoutes() {

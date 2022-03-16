@@ -25,6 +25,7 @@ dependencies {
 
     //Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
     // Ktor
     implementation("io.ktor:ktor-server-core:$ktor_version")

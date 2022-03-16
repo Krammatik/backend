@@ -3,7 +3,9 @@ package io.github.krammatik.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
-import io.github.krammatik.dto.ErrorResponse
+import io.github.krammatik.course.CourseController
+import io.github.krammatik.dto.ErrorResponseDto
+import io.github.krammatik.task.TaskController
 import io.github.krammatik.user.UserController
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -52,27 +54,32 @@ fun Application.configureRouting() {
     routing {
         install(StatusPages) {
             exception<InvalidRequestException> { cause ->
-                call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message ?: ""))
+                call.respond(HttpStatusCode.BadRequest, ErrorResponseDto(cause.message ?: ""))
             }
             exception<AuthenticationException> { cause ->
-                call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message ?: ""))
+                call.respond(HttpStatusCode.Unauthorized, ErrorResponseDto(cause.message ?: ""))
             }
             exception<AuthorizationException> { cause ->
-                call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: ""))
+                call.respond(HttpStatusCode.Forbidden, ErrorResponseDto(cause.message ?: ""))
             }
             exception<NotFoundException> { cause ->
-                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
+                call.respond(HttpStatusCode.NotFound, ErrorResponseDto(cause.message ?: ""))
+            }
+            exception<ForbiddenException> { cause ->
+                call.respond(HttpStatusCode.Forbidden, ErrorResponseDto(cause.message ?: ""))
             }
             exception<ResourceAlreadyExistsException> { cause ->
-                call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: ""))
+                call.respond(HttpStatusCode.Forbidden, ErrorResponseDto(cause.message ?: ""))
             }
             exception<NotFoundException> { cause ->
-                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: ""))
+                call.respond(HttpStatusCode.NotFound, ErrorResponseDto(cause.message ?: ""))
             }
         }
 
         controller("/auth") { AuthenticationController(instance()) }
-        controller("/users") { UserController(instance()) }
+        controller("/user") { UserController(instance()) }
+        controller("/course") { CourseController(instance()) }
+        controller("/task") { TaskController(instance()) }
     }
 }
 
@@ -81,3 +88,4 @@ class AuthenticationException(override val message: String? = null) : RuntimeExc
 class AuthorizationException(override val message: String? = null) : RuntimeException()
 class NotFoundException(override val message: String? = null) : RuntimeException()
 class ResourceAlreadyExistsException(override val message: String? = null) : RuntimeException()
+class ForbiddenException(override val message: String? = null) : RuntimeException()
