@@ -1,6 +1,7 @@
 package io.github.krammatik.task.services
 
 import com.mongodb.client.MongoClient
+import io.github.krammatik.models.Course
 import io.github.krammatik.models.Task
 import io.github.krammatik.task.dto.CreateTaskRequest
 import org.kodein.di.DI
@@ -8,6 +9,7 @@ import org.kodein.di.instance
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.updateOne
 
 class TaskDatabase(val di: DI) : ITaskDatabase {
 
@@ -26,6 +28,11 @@ class TaskDatabase(val di: DI) : ITaskDatabase {
 
     override fun getTasks(): List<Task> {
         return taskCollection.find().toList()
+    }
+
+    override fun updateTask(task: Task): Task {
+        this.taskCollection.updateOne(Course::id eq task.id, task)
+        return task
     }
 
     override fun createTask(createTaskRequest: CreateTaskRequest): Task {

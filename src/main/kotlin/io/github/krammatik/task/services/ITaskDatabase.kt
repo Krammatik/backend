@@ -11,6 +11,8 @@ interface ITaskDatabase {
 
     fun getTasks() : List<Task>
 
+    fun updateTask(task: Task) : Task
+
     fun createTask(createTaskRequest: CreateTaskRequest): Task
 
 }

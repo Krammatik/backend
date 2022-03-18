@@ -17,8 +17,7 @@ class UserController(application: Application) : AbstractDIController(applicatio
     private val userDatabase: IUserDatabase by di.instance()
 
     private fun Route.getUsers() = get {
-        val users =
-            userDatabase.getUsers(call.parameters["page"]?.toInt() ?: 0, call.parameters["count"]?.toInt() ?: 100)
+        val users = userDatabase.getUsers(call.parameters["page"]?.toInt() ?: 0, call.parameters["count"]?.toInt() ?: 100)
         call.respond(HttpStatusCode.OK, users.map { it.toTransferable(di) })
     }
 
