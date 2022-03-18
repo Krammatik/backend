@@ -26,7 +26,7 @@ class AuthenticationController(application: Application) : AbstractDIController(
     private fun Route.login() = post("/login") {
         val credentials = call.receive<AuthenticationCredentialsDto>()
         if (credentials.username.isEmpty() || credentials.password.isEmpty()) {
-            throw InvalidRequestException()
+            throw InvalidRequestException("The username and password mustn't be empty.")
         }
         val user = userDatabase.getAccountByName(credentials.username) ?: throw AuthenticationException()
         if (!user.passwordValid(credentials.password)) {
