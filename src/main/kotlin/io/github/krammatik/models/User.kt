@@ -10,7 +10,7 @@ import java.util.*
 
 data class User(
     @BsonId
-    var id: String = UUID.randomUUID().toString(),
+    var id: String,
     var username: String,
     var password: String,
     var groups: List<String> = emptyList(),
