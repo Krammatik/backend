@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     // Kodein
-    implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.10.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-controller-jvm:7.11.0")
 
     //Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.0")

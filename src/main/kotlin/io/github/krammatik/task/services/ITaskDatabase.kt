@@ -7,6 +7,10 @@ interface ITaskDatabase {
 
     fun getTaskById(id: String): Task?
 
+    fun getTasksByTitle(title: String) : List<Task>
+
+    fun getTasks() : List<Task>
+
     fun createTask(createTaskRequest: CreateTaskRequest): Task
 
 }

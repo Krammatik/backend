@@ -20,6 +20,14 @@ class TaskDatabase(val di: DI) : ITaskDatabase {
         return taskCollection.findOne(Task::id eq id)
     }
 
+    override fun getTasksByTitle(title: String): List<Task> {
+        return this.taskCollection.find(Task::title eq title).toList()
+    }
+
+    override fun getTasks(): List<Task> {
+        return taskCollection.find().toList()
+    }
+
     override fun createTask(createTaskRequest: CreateTaskRequest): Task {
         val task = createTaskRequest.toTransferable(di)
         this.taskCollection.insertOne(task)
