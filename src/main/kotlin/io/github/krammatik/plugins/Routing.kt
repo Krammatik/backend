@@ -77,7 +77,7 @@ fun Application.configureRouting() {
         }
 
         controller("/auth") { AuthenticationController(instance()) }
-        controller("/user") { UserController(instance()) }
+        controller("/users") { UserController(instance()) }
         controller("/course") { CourseController(instance()) }
         controller("/task") { TaskController(instance()) }
     }

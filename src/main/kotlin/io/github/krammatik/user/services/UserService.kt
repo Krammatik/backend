@@ -9,6 +9,7 @@ import org.kodein.di.instance
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import java.util.UUID
 
 class UserService(val di: DI) : IUserDatabase {
 
@@ -21,7 +22,10 @@ class UserService(val di: DI) : IUserDatabase {
         if (getUserByName(user.username) != null) {
             throw ResourceAlreadyExistsException("User with username '${user.username}' already exists!")
         }
-        val dbUser = user.toTransferable(di).apply { this.password = password }
+        val dbUser = user.toTransferable(di).apply {
+            this.id = UUID.randomUUID().toString()
+            this.password = password
+        }
         this.userCollection.insertOne(dbUser)
         return dbUser
     }
