@@ -133,6 +133,69 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /task:
+    post:
+      tags:
+        - task
+      security:
+        - bearerAuth: [ "creator" ]
+      responses:
+        201:
+          description: The successfully created task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        403:
+          description: Gets returned when the user is not a creator
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      tags:
+        - task
+      security:
+        - bearerAuth: [ "user" ]
+      responses:
+        200:
+          description: A list of all tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /task/{id}:
+    parameters:
+      - name: id
+        required: true
+        in: path
+    get:
+      tags:
+        - task
+      security:
+        - bearerAuth: [ "user" ]
+      responses:
+        200:
+          description: The requested task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        404:
+          description: When the task couldn't be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+
 
 components:
   securitySchemes:
@@ -148,6 +211,58 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        title:
+          type: string
+        type:
+          type: string
+          enum:
+            - DEFAULT
+            - SINGLE_CHOICE
+            - MULTIPLE_CHOICE
+            - FIFTY_FIFTY
+            - GAP_TEXT
+            - WORD_MATCH
+            - SENTENCE_COMPLETION
+        description:
+          $ref: "#/components/schemas/TextMediaElement"
+        score:
+          type: number
+          format: double
+        solutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Solution"
+        hint:
+          $ref: "#/components/schemas/TextMediaElement"
+        recommendations:
+          type: array
+          items:
+            type: string
+        value:
+          type: string
+
+    Solution:
+      type: object
+      properties:
+        value:
+          type: string
+        correct:
+          type: boolean
+    TextMediaElement:
+      type: object
+      properties:
+        text:
+          type: string
+        imgData:
+          type: array
+          items:
+            type: string
     Credentials:
       type: object
       properties:
