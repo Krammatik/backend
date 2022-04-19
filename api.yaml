@@ -175,6 +175,9 @@ paths:
       - name: id
         required: true
         in: path
+        schema:
+          type: string
+          format: uuid
     get:
       tags:
         - task
