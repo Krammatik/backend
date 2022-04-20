@@ -198,7 +198,76 @@ paths:
                 $ref: "#/components/schemas/Error"
         401:
           $ref: "#/components/responses/UnauthorizedError"
-
+  /course:
+    post:
+      tags:
+        - course
+      security:
+        - bearerAuth: [ "creator" ]
+      responses:
+        201:
+          description: Creates a new course to which tasks and users can be added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        403:
+          description: Gets returned when the user is not a creator
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      tags:
+        - course
+      security:
+        - bearerAuth: [ "user" ]
+      responses:
+        200:
+          description: Gets a list of all available courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /course/{id}/task:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags:
+        - course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: Returns the updated course
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        403:
+          description: Gets returned when the user is not a creator
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   securitySchemes:
@@ -263,6 +332,33 @@ components:
         text:
           type: string
         imgData:
+          type: array
+          items:
+            type: string
+    CourseRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          $ref: "#/components/schemas/TextMediaElement"
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        author:
+          type: string
+        description:
+          $ref: "#/components/schemas/TextMediaElement"
+        creationDate:
+          type: string
+        changeDate:
+          type: string
+        tasks:
           type: array
           items:
             type: string

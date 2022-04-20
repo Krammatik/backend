@@ -22,6 +22,10 @@ class CourseController(application: Application) : AbstractDIController(applicat
     private val courseDatabase: ICourseDatabase by di.instance()
     private val taskDatabase: ITaskDatabase by di.instance()
 
+    private fun Route.listCourses() = get {
+        call.respond(HttpStatusCode.OK, courseDatabase.getCourses())
+    }
+
     private fun Route.createCourse() = post {
         if (!call.allowed("creator")) {
             throw ForbiddenException()
@@ -51,6 +55,7 @@ class CourseController(application: Application) : AbstractDIController(applicat
 
     override fun Route.getRoutes() {
         authenticate {
+            listCourses()
             createCourse()
             addTask()
         }
