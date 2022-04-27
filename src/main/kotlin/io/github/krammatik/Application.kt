@@ -3,6 +3,8 @@ package io.github.krammatik
 import io.github.krammatik.course.services.CourseDatabase
 import io.github.krammatik.course.services.ICourseDatabase
 import io.github.krammatik.encrypt.EncryptionService
+import io.github.krammatik.groups.services.GroupService
+import io.github.krammatik.groups.services.IGroupDatabase
 import io.github.krammatik.plugins.configureMonitoring
 import io.github.krammatik.plugins.configureRouting
 import io.github.krammatik.plugins.configureSerialization
@@ -37,6 +39,7 @@ fun main() {
             bindSingleton<IUserDatabase> { UserService(this.di) }
             bindSingleton<ICourseDatabase> { CourseDatabase(this.di) }
             bindSingleton<ITaskDatabase> { TaskDatabase(this.di) }
+            bindSingleton<IGroupDatabase> { GroupService(this.di) }
         }
         configureRouting()
         configureMonitoring()

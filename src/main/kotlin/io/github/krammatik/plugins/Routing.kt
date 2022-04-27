@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.AuthenticationController
 import io.github.krammatik.course.CourseController
 import io.github.krammatik.dto.ErrorResponseDto
+import io.github.krammatik.groups.GroupController
 import io.github.krammatik.task.TaskController
 import io.github.krammatik.user.UserController
 import io.ktor.application.*
@@ -80,6 +81,7 @@ fun Application.configureRouting() {
         controller("/users") { UserController(instance()) }
         controller("/course") { CourseController(instance()) }
         controller("/task") { TaskController(instance()) }
+        controller("/group") { GroupController(instance()) }
     }
 }
 
