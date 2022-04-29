@@ -21,12 +21,6 @@ import org.kodein.di.ktor.controller.controller
 
 fun Application.configureRouting() {
     install(Locations) {}
-    install(DefaultHeaders) {
-        header("Access-Control-Allow-Origin", "*")
-        header("Access-Control-Allow-Methods", "*")
-        header("Access-Control-Allow-Headers", "*")
-        header("Access-Control-Allow-Credentials", "true")
-    }
     authentication {
         jwt {
             verifier(
