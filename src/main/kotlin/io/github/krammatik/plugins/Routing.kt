@@ -19,9 +19,11 @@ import io.ktor.routing.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.controller.controller
 
-@OptIn(KtorExperimentalLocationsAPI::class)
 fun Application.configureRouting() {
     install(Locations) {}
+    install(DefaultHeaders) {
+        header("Access-Control-Allow-Origin", "*")
+    }
     authentication {
         jwt {
             verifier(
