@@ -23,7 +23,7 @@ class CourseController(application: Application) : AbstractDIController(applicat
     private val taskDatabase: ITaskDatabase by di.instance()
 
     private fun Route.listCourses() = get {
-        call.respond(HttpStatusCode.OK, courseDatabase.getCourses())
+        call.respond(HttpStatusCode.OK, courseDatabase.getCourses().map { it.toTransferable(di) })
     }
 
     private fun Route.createCourse() = post {
@@ -33,7 +33,7 @@ class CourseController(application: Application) : AbstractDIController(applicat
         val request = call.receive<CourseCreationRequest>()
         request.userId = call.userId()
         val course = courseDatabase.createCourse(request)
-        call.respond(HttpStatusCode.Created, course)
+        call.respond(HttpStatusCode.Created, course.toTransferable(di))
     }
 
     private fun Route.addTask() = post("/{id}/task") {
@@ -50,7 +50,7 @@ class CourseController(application: Application) : AbstractDIController(applicat
             course.tasks.add(task)
         }
         course = courseDatabase.updateCourse(course)
-        call.respond(HttpStatusCode.OK, course)
+        call.respond(HttpStatusCode.OK, course.toTransferable(di))
     }
 
     override fun Route.getRoutes() {
