@@ -4,6 +4,7 @@ import io.github.krammatik.dto.IDataTransferable
 import io.github.krammatik.models.TaskType
 import org.kodein.di.DI
 
+@kotlinx.serialization.Serializable
 enum class TaskTypeDto : IDataTransferable<TaskType> {
     DEFAULT,
     SINGLE_CHOICE,

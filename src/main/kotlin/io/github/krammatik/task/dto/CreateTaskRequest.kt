@@ -5,6 +5,7 @@ import io.github.krammatik.dto.TextMediaElementDto
 import io.github.krammatik.models.Task
 import org.kodein.di.DI
 
+@kotlinx.serialization.Serializable
 data class CreateTaskRequest(
     val title: String,
     val type: TaskTypeDto,
