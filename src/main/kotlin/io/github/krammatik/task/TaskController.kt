@@ -26,12 +26,12 @@ class TaskController(application: Application) : AbstractDIController(applicatio
         }
         val request = call.receive<CreateTaskRequest>()
         val task = taskDatabase.createTask(request)
-        call.respond(HttpStatusCode.Created, task)
+        call.respond(HttpStatusCode.Created, task.toTransferable(di))
     }
 
     private fun Route.getTasks() = get {
         val tasks = taskDatabase.getTasks()
-        call.respond(tasks)
+        call.respond(tasks.map { it.toTransferable(di) })
     }
 
     private fun Route.getTaskById() = get("/{id}") {
@@ -40,7 +40,7 @@ class TaskController(application: Application) : AbstractDIController(applicatio
         }
         val id = call.parameters["id"]!!
         val task = taskDatabase.getTaskById(id) ?: throw NotFoundException("task with $id not found")
-        call.respond(HttpStatusCode.OK, task)
+        call.respond(HttpStatusCode.OK, task.toTransferable(di))
     }
 
     override fun Route.getRoutes() {
