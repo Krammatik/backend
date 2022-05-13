@@ -74,6 +74,12 @@ fun Application.configureRouting() {
             exception<NotFoundException> { cause ->
                 call.respond(HttpStatusCode.NotFound, ErrorResponseDto(cause.message ?: ""))
             }
+            exception<java.lang.Exception> { cause ->
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponseDto(cause.message ?: ""))
+            }
+            exception<Exception> { cause ->
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponseDto(cause.message ?: ""))
+            }
         }
 
         controller("/auth") { AuthenticationController(instance()) }
