@@ -4,8 +4,8 @@ info:
   description: Krammatik backend
   version: 1.0.0
 servers:
-  - url: 'http://localhost:8080'
-  - url: 'https://krammatik.deathsgun.xyz'
+  - url: http://localhost:8080
+  - url: https://krammatik.deathsgun.xyz
 paths:
   /auth/login:
     post:
@@ -14,9 +14,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Credentials"
+              $ref: '#/components/schemas/Credentials'
       responses:
-        200:
+        '200':
           description: Successful authentication the token for request is in the response body
           content:
             application/json:
@@ -25,21 +25,21 @@ paths:
                 properties:
                   token:
                     type: string
-        400:
+        '400':
           description: No username or password provided
-        401:
+        '401':
           description: User not found or password invalid
       tags:
         - authentication
   /auth/validate:
     get:
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       responses:
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
-        204:
+        '204':
           description: AuthSessionId is valid and can be used for further requests
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       tags:
         - authentication
   /auth/register:
@@ -48,20 +48,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Credentials"
+              $ref: '#/components/schemas/Credentials'
       responses:
-        201:
+        '201':
           description: User has been successfully created and can be used to login
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        403:
+                $ref: '#/components/schemas/User'
+        '403':
           description: There is already a user with the given username in existance
           content:
             applcation/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
       tags:
         - authentication
   /users:
@@ -69,7 +69,8 @@ paths:
       tags:
         - user
       security:
-        - bearerAuth: [ "user" ]
+        - bearerAuth:
+            - user
       parameters:
         - name: page
           in: query
@@ -80,31 +81,32 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           description: A list of all users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /users/user:
     get:
       security:
-        - bearerAuth: [ "user" ]
+        - bearerAuth:
+            - user
       tags:
         - user
       responses:
-        200:
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: '#/components/schemas/User'
           description: Returns the current logged in user
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /users/{id}:
     parameters:
       - name: id
@@ -117,59 +119,62 @@ paths:
       tags:
         - user
       security:
-        - bearerAuth: [ "user" ]
+        - bearerAuth:
+            - user
       responses:
-        200:
+        '200':
           description: The user by id
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
-        404:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
           description: Gets returned when the user does not exits
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
   /task:
     post:
       tags:
         - task
       security:
-        - bearerAuth: [ "creator" ]
+        - bearerAuth:
+            - creator
       responses:
-        201:
+        '201':
           description: The successfully created task
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
-        403:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
           description: Gets returned when the user is not a creator
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
     get:
       tags:
         - task
       security:
-        - bearerAuth: [ "user" ]
+        - bearerAuth:
+            - user
       responses:
-        200:
+        '200':
           description: A list of all tasks
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Task"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+                  $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /task/{id}:
     parameters:
       - name: id
@@ -182,63 +187,67 @@ paths:
       tags:
         - task
       security:
-        - bearerAuth: [ "user" ]
+        - bearerAuth:
+            - user
       responses:
-        200:
+        '200':
           description: The requested task
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-        404:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
           description: When the task couldn't be found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+                $ref: '#/components/schemas/Error'
   /course:
     post:
       tags:
         - course
       security:
-        - bearerAuth: [ "creator" ]
+        - bearerAuth:
+            - creator
       responses:
-        201:
+        '201':
           description: Creates a new course to which tasks and users can be added
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
-        403:
+                $ref: '#/components/schemas/Course'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
           description: Gets returned when the user is not a creator
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
     get:
       tags:
         - course
       security:
-        - bearerAuth: [ "user" ]
+        - bearerAuth:
+            - user
       responses:
-        200:
+        '200':
           description: Gets a list of all available courses
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Course"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
+                  $ref: '#/components/schemas/Course'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /course/{id}/task:
     parameters:
       - name: id
         in: path
+        required: true
         schema:
           type: string
           format: uuid
@@ -254,21 +263,20 @@ paths:
               items:
                 type: string
       responses:
-        200:
+        '200':
           description: Returns the updated course
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
-        403:
+                $ref: '#/components/schemas/Course'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
           description: Gets returned when the user is not a creator
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -281,7 +289,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
   schemas:
     Task:
       type: object
@@ -302,23 +310,22 @@ components:
             - WORD_MATCH
             - SENTENCE_COMPLETION
         description:
-          $ref: "#/components/schemas/TextMediaElement"
+          $ref: '#/components/schemas/TextMediaElement'
         score:
           type: number
           format: double
         solutions:
           type: array
           items:
-            $ref: "#/components/schemas/Solution"
+            $ref: '#/components/schemas/Solution'
         hint:
-          $ref: "#/components/schemas/TextMediaElement"
+          $ref: '#/components/schemas/TextMediaElement'
         recommendations:
           type: array
           items:
             type: string
         value:
           type: string
-
     Solution:
       type: object
       properties:
@@ -341,7 +348,7 @@ components:
         title:
           type: string
         description:
-          $ref: "#/components/schemas/TextMediaElement"
+          $ref: '#/components/schemas/TextMediaElement'
     Course:
       type: object
       properties:
@@ -353,7 +360,7 @@ components:
         author:
           type: string
         description:
-          $ref: "#/components/schemas/TextMediaElement"
+          $ref: '#/components/schemas/TextMediaElement'
         creationDate:
           type: string
         changeDate:
@@ -367,10 +374,10 @@ components:
       properties:
         username:
           type: string
-          example: "max.musterman"
+          example: max.musterman
         password:
           type: string
-          example: "MusterPassword123"
+          example: MusterPassword123
     User:
       type: object
       properties:
