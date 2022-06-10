@@ -16,6 +16,10 @@ class GroupService(val di: DI) : IGroupDatabase {
     private val database get() = this.mongoClient.getDatabase("krammatik")
     private val groupCollection get() = this.database.getCollection<Group>("groups")
 
+    init {
+        this.createGroup(GroupCreationRequest("User"))
+    }
+
     override fun getGroups(): List<Group> {
         return this.groupCollection.find().toList()
     }
@@ -29,7 +33,7 @@ class GroupService(val di: DI) : IGroupDatabase {
     }
 
     override fun getGroupsByUser(user: User): List<Group> {
-        return this.groupCollection.find(Group::users / Group::id `in` user.id).toList()
+        return this.groupCollection.find(Group::users / User::id `in` user.id).toList()
     }
 
     override fun createGroup(request: GroupCreationRequest) {

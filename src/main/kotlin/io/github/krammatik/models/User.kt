@@ -8,6 +8,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
 
+@kotlinx.serialization.Serializable
 data class User(
     @BsonId
     var id: String,

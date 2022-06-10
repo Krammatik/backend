@@ -1,6 +1,5 @@
 package io.github.krammatik.groups
 
-import io.github.krammatik.course.dto.CourseCreationRequest
 import io.github.krammatik.groups.dto.GroupCreationRequest
 import io.github.krammatik.groups.services.IGroupDatabase
 import io.github.krammatik.plugins.ForbiddenException
@@ -35,8 +34,8 @@ class GroupController(application: Application) : AbstractDIController(applicati
         }
         val request = call.receive<GroupCreationRequest>()
         request.creatorUserId = call.userId()
-        val course = groupDatabase.createGroup(request)
-        call.respond(HttpStatusCode.Created, course)
+        val group = groupDatabase.createGroup(request)
+        call.respond(HttpStatusCode.Created, group)
     }
 
     private fun Route.getCurrentUserGroups() = get("/user") {

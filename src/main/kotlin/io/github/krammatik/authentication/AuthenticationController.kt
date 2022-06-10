@@ -3,6 +3,7 @@ package io.github.krammatik.authentication
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.krammatik.authentication.dto.AuthenticationCredentialsDto
+import io.github.krammatik.authentication.response.AuthenticationRegistrationResponse
 import io.github.krammatik.models.User
 import io.github.krammatik.plugins.AuthenticationException
 import io.github.krammatik.plugins.InvalidRequestException
@@ -23,6 +24,13 @@ class AuthenticationController(application: Application) : AbstractDIController(
 
     private val userDatabase: IUserDatabase by di.instance()
 
+    private fun createJWTToken(user : User) = JWT.create()
+        .withClaim("id", user.id)
+        .withClaim("groups", user.groups)
+        .withIssuer("https://krammatik.deathsgun.xyz/")
+        .withExpiresAt(Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8)))
+        .sign(Algorithm.HMAC256(System.getenv("ENCRYPT_SECRET")))
+
     private fun Route.login() = post("/login") {
         val credentials = call.receive<AuthenticationCredentialsDto>()
         if (credentials.username.isEmpty() || credentials.password.isEmpty()) {
@@ -32,15 +40,9 @@ class AuthenticationController(application: Application) : AbstractDIController(
         if (!user.passwordValid(credentials.password)) {
             throw AuthenticationException()
         }
-        val token = JWT.create()
-            .withClaim("id", user.id)
-            .withClaim("groups", user.groups)
-            .withIssuer("https://krammatik.deathsgun.xyz/")
-            .withExpiresAt(Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8)))
-            .sign(Algorithm.HMAC256(System.getenv("ENCRYPT_SECRET")))
         call.respond(
             hashMapOf(
-                "token" to token
+                "token" to createJWTToken(user)
             )
         )
     }
@@ -48,11 +50,9 @@ class AuthenticationController(application: Application) : AbstractDIController(
     private fun Route.register() = post("/register") {
         val credentials = call.receive<AuthenticationCredentialsDto>()
         val password = User.hashPassword(credentials.password)
-        val user = userDatabase.createUser(
-            UserDto(UUID.randomUUID().toString(), credentials.username, listOf("user")),
-            password
-        )
-        call.respond(HttpStatusCode.Created, user)
+        val userDTO = UserDto(UUID.randomUUID().toString(), credentials.username, listOf("user"));
+        val user = userDatabase.createUser(userDTO, password)
+        call.respond(HttpStatusCode.Created, AuthenticationRegistrationResponse(userDTO, createJWTToken(user)));
     }
 
     private fun Route.validate() = get("/validate") {

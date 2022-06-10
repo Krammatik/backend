@@ -43,11 +43,22 @@ class TaskController(application: Application) : AbstractDIController(applicatio
         call.respond(HttpStatusCode.OK, task.toTransferable(di))
     }
 
+    private fun Route.solveTask() = get("/solve/{id}") {
+        if(!call.parameters.contains("id")) {
+            throw InvalidRequestException("no parameter id")
+        }
+        val id = call.parameters["id"]!!
+        val task = taskDatabase.getTaskById(id) ?: throw NotFoundException("task with $id not found")
+
+        //TODO: Solve task
+    }
+
     override fun Route.getRoutes() {
         authenticate {
             createTask()
             getTasks()
             getTaskById()
+            solveTask()
         }
     }
 

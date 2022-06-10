@@ -13,12 +13,8 @@ data class Group(
     var id : String = UUID.randomUUID().toString(),
     var creator: String,
     var name : String,
-    var users: List<User> = emptyList()
+    val users: List<User> = emptyList()
 ) : IDataTransferable<GroupDto> {
-
-    fun addUser(user: User) {
-        this.users += user
-    }
 
     override fun toTransferable(di: DI): GroupDto {
         return GroupDto(this.id, this.creator, this.name, this.users.map { it.toTransferable(di) } )
